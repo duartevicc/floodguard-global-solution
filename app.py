@@ -148,6 +148,49 @@ fig_ranking.update_yaxes(categoryorder="total ascending")
 
 st.plotly_chart(fig_ranking, width="stretch")
 
+# Análise de sazonalidade
+st.divider()
+st.header("Análise de sazonalidade")
+
+# Contagem de ocorrências por período
+comparacao_chuva = (
+    df_filtrado.groupby("periodo_chuvoso")
+    .size()
+    .reset_index(name="total")
+)
+
+# Identificação dos períodos
+comparacao_chuva["periodo"] = (
+    comparacao_chuva["periodo_chuvoso"]
+    .map({
+        True: "Período chuvoso",
+        False: "Fora do período chuvoso",
+        1: "Período chuvoso",
+        0: "Fora do período chuvoso"
+    })
+)
+
+# Criação do gráfico
+fig_chuva = px.bar(
+    comparacao_chuva,
+    x="periodo",
+    y="total",
+    color="periodo",
+    text="total",
+    title="Ocorrências por período",
+    labels={
+        "periodo": "Classificação",
+        "total": "Quantidade de ocorrências"
+    }
+)
+
+st.plotly_chart(fig_chuva, width="stretch")
+
+st.caption(
+    "Comparação baseada em registros históricos de "
+    "alagamentos e inundações."
+)
+
 # Tabela de dados
 st.divider()
 st.header("Dados detalhados")
