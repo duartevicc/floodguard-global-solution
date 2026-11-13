@@ -216,7 +216,56 @@ st.caption(
     "Comparação baseada em registros históricos de "
     "alagamentos e inundações."
 )
+# Mapa geográfico das ocorrências
+st.divider()
+st.header("Distribuição geográfica das ocorrências")
 
+from pyproj import Transformer
+
+# Conversão provisória de UTM para latitude/longitude
+transformador = Transformer.from_crs(
+    "EPSG:31983",
+    "EPSG:4326",
+    always_xy=True
+)
+
+df_mapa = df_filtrado.dropna(subset=["x", "y"]).copy()
+
+longitude, latitude = transformador.transform(
+    df_mapa["x"].to_numpy(),
+    df_mapa["y"].to_numpy()
+)
+
+df_mapa["latitude"] = latitude
+df_mapa["longitude"] = longitude
+
+# Mapa interativo
+fig_mapa = px.scatter_map(
+    df_mapa,
+    lat="latitude",
+    lon="longitude",
+    hover_name="subprefeitura",
+    hover_data=["ano", "mes", "ocorrencia"],
+    zoom=9,
+    height=550,
+    color_discrete_sequence=["#8B5CF6"],
+    title="Localização dos registros de alagamentos"
+)
+
+fig_mapa.update_layout(
+    map_style="carto-darkmatter",
+    map_center={"lat": -23.55, "lon": -46.63},
+    map_zoom=10,
+    margin={"r": 0, "t": 50, "l": 0, "b": 0}
+)
+
+st.plotly_chart(fig_mapa, width="stretch")
+
+st.caption(
+    "Posicionamento geográfico provisório, considerando "
+    "SIRGAS 2000 / UTM zona 23S (EPSG:31983). "
+    "O sistema de coordenadas deve ser confirmado na fonte original."
+)
 # Tabela de dados
 st.divider()
 st.header("Dados detalhados")
