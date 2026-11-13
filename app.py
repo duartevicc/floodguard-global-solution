@@ -19,9 +19,16 @@ def carregar_dados():
 df = carregar_dados()
 
 # Cabeçalho
-st.title("Flood Guard")
-st.subheader("Monitoramento histórico de alagamentos em São Paulo")
-st.caption("Análise de ocorrências registradas entre 2020 e 2025")
+st.title("FLOOD GUARD")
+st.markdown(
+    "### Inteligência de dados para análise de alagamentos urbanos"
+)
+
+st.info(
+    "Painel interativo desenvolvido para a Global Solution 2026.2 "
+    "da FIAP. Apresenta análises históricas de alagamentos e "
+    "inundações no município de São Paulo, entre 2020 e 2025."
+)
 
 # Filtros
 st.sidebar.header("Filtros")
@@ -75,7 +82,6 @@ if df_filtrado.empty:
 
 # Gráfico de evolução anual
 st.divider()
-st.header("Evolução anual")
 
 ocorrencias_ano = (
     df_filtrado.groupby("ano")
@@ -88,16 +94,22 @@ fig_ano = px.bar(
     x="ano",
     y="total",
     title="Ocorrências por ano",
-    labels={"ano": "Ano", "total": "Ocorrências"},
-    text="total"
+    labels={
+        "ano": "Ano",
+        "total": "Ocorrências"
+    },
+    text="total",
+    color_discrete_sequence=["#2563EB"]
 )
 
 fig_ano.update_xaxes(type="category")
 
-st.plotly_chart(fig_ano, width="stretch")
+# Espaços reservados para os gráficos
+col_grafico1, col_grafico2 = st.columns(2)
 
-# Gráfico de distribuição mensal
-st.header("Distribuição mensal")
+with col_grafico1:
+    st.plotly_chart(fig_ano, width="stretch")
+
 
 ocorrencias_mes = (
     df_filtrado.groupby("mes")
@@ -112,15 +124,24 @@ fig_mes = px.line(
     y="total",
     markers=True,
     title="Ocorrências por mês",
-    labels={"mes": "Mês", "total": "Ocorrências"}
+    labels={
+        "mes": "Mês",
+        "total": "Ocorrências"
+    },
+    color_discrete_sequence=["#8B5CF6"]
 )
 
 fig_mes.update_xaxes(dtick=1)
 
-st.plotly_chart(fig_mes, width="stretch")
+with col_grafico2:
+    st.plotly_chart(fig_mes, width="stretch")
 
 # Ranking de subprefeituras
-st.header("Regiões com mais ocorrências")
+# Ranking de subprefeituras e análise de sazonalidade
+st.divider()
+st.header("Análise regional e sazonalidade")
+
+col_ranking, col_chuva = st.columns(2)
 
 ranking = (
     df_filtrado["subprefeitura"]
@@ -141,16 +162,16 @@ fig_ranking = px.bar(
         "total": "Ocorrências",
         "subprefeitura": "Subprefeitura"
     },
-    text="total"
+    text="total",
+    color_discrete_sequence=["#2563EB"]
 )
 
 fig_ranking.update_yaxes(categoryorder="total ascending")
 
-st.plotly_chart(fig_ranking, width="stretch")
+with col_ranking:
+    st.plotly_chart(fig_ranking, width="stretch")
 
-# Análise de sazonalidade
-st.divider()
-st.header("Análise de sazonalidade")
+
 
 # Contagem de ocorrências por período
 comparacao_chuva = (
@@ -181,10 +202,15 @@ fig_chuva = px.bar(
     labels={
         "periodo": "Classificação",
         "total": "Quantidade de ocorrências"
+    },
+    color_discrete_map={
+        "Período chuvoso": "#2563EB",
+        "Fora do período chuvoso": "#8B5CF6"
     }
 )
 
-st.plotly_chart(fig_chuva, width="stretch")
+with col_chuva:
+    st.plotly_chart(fig_chuva, width="stretch")
 
 st.caption(
     "Comparação baseada em registros históricos de "
