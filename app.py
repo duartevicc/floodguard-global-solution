@@ -438,3 +438,11 @@ st.markdown('<div id="dados-detalhados"></div>', unsafe_allow_html=True)
 st.header("Dados detalhados")
 
 st.dataframe(df_filtrado, width="stretch")
+
+# Exportação dos dados filtrados
+st.download_button(
+    label="Baixar dados filtrados (CSV)",
+    data=df_filtrado.to_csv(index=False).encode("utf-8-sig"),
+    file_name="floodguard_dados_filtrados.csv",
+    mime="text/csv"
+)
