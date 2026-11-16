@@ -216,6 +216,65 @@ st.caption(
     "Comparação baseada em registros históricos de "
     "alagamentos e inundações."
 )
+# Mapa de calor: ocorrências por ano e mês
+st.divider()
+st.header("Mapa de calor temporal")
+
+df_calor = (
+    df_filtrado.groupby(["ano", "mes"])
+    .size()
+    .reset_index(name="total")
+)
+
+tabela_calor = df_calor.pivot(
+    index="ano",
+    columns="mes",
+    values="total"
+)
+
+tabela_calor = tabela_calor.reindex(
+    index=sorted(df_filtrado["ano"].unique()),
+    columns=range(1, 13),
+    fill_value=0
+).fillna(0)
+
+fig_calor = px.imshow(
+    tabela_calor,
+    labels={
+        "x": "Mês",
+        "y": "Ano",
+        "color": "Ocorrências"
+    },
+    x=[
+        "Jan", "Fev", "Mar", "Abr",
+        "Mai", "Jun", "Jul", "Ago",
+        "Set", "Out", "Nov", "Dez"
+    ],
+    y=[str(ano) for ano in tabela_calor.index],
+    color_continuous_scale=[
+        "#F1F5F9",
+        "#93C5FD",
+        "#2563EB",
+        "#7C3AED"
+    ],
+    text_auto=True,
+    aspect="auto",
+    title="Concentração mensal de ocorrências por ano"
+)
+
+fig_calor.update_layout(
+    height=400,
+    coloraxis_colorbar_title="Total",
+    yaxis=dict(
+        type="category"
+    ),
+    xaxis=dict(
+        type="category"
+    )
+)
+
+st.plotly_chart(fig_calor, width="stretch")
+
 # Mapa geográfico das ocorrências
 st.divider()
 st.header("Distribuição geográfica das ocorrências")
