@@ -18,17 +18,43 @@ def carregar_dados():
 
 df = carregar_dados()
 
-# Cabeçalho
-st.title("FLOOD GUARD")
+# Cabeçalho do dashboard
 st.markdown(
-    "### Inteligência de dados para análise de alagamentos urbanos"
+    """
+    <div style="padding: 20px 0 12px 0;">
+        <p style="color: #A78BFA; font-size: 13px; font-weight: 700; letter-spacing: 2px;">
+            CITIZENTECH | GLOBAL SOLUTION 2026.2
+        </p>
+        <h1 style="color: #F8FAFC; font-size: 46px; font-weight: 800; margin: 0;">
+            FLOOD GUARD
+        </h1>
+        <p style="color: #94A3B8; font-size: 18px; margin-top: 10px;">
+            Inteligência de dados para análise de alagamentos e inundações urbanas em São Paulo.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
 )
 
-st.info(
-    "Painel interativo desenvolvido para a Global Solution 2026.2 "
-    "da FIAP. Apresenta análises históricas de alagamentos e "
-    "inundações no município de São Paulo, entre 2020 e 2025."
+st.caption(
+    "Projeto acadêmico | FIAP | Turma 1TSCOB | Grupo Core III"
 )
+# Menu de navegação
+st.sidebar.header("Navegação")
+
+st.sidebar.markdown(
+    """
+    - [Visão geral](#visao-geral)
+    - [Análise temporal](#analise-temporal)
+    - [Análise regional](#analise-regional)
+    - [Mapa de calor temporal](#mapa-calor-temporal)
+    - [Tipos de ocorrências](#tipos-de-ocorrencias)
+    - [Distribuição geográfica](#distribuicao-geografica)
+    - [Dados detalhados](#dados-detalhados)
+    """
+)
+
+st.sidebar.divider()
 
 # Filtros
 st.sidebar.header("Filtros")
@@ -57,24 +83,38 @@ df_filtrado = df[
 
 # Indicadores
 st.divider()
+st.markdown('<div id="visao-geral"></div>', unsafe_allow_html=True)
 st.header("Visão geral")
+
+st.caption(
+    "Indicadores consolidados das ocorrências registradas "
+    "no período e nas subprefeituras selecionadas."
+)
 
 col1, col2, col3 = st.columns(3)
 
-col1.metric(
-    "Total de ocorrências",
-    f"{len(df_filtrado):,}".replace(",", ".")
-)
+col1, col2, col3 = st.columns(3)
 
-col2.metric(
-    "Anos selecionados",
-    df_filtrado["ano"].nunique()
-)
+with col1:
+    with st.container(border=True):
+        st.metric(
+            "Total de ocorrências",
+            f"{len(df_filtrado):,}".replace(",", ".")
+        )
 
-col3.metric(
-    "Subprefeituras com registros",
-    df_filtrado["subprefeitura"].nunique()
-)
+with col2:
+    with st.container(border=True):
+        st.metric(
+            "Anos selecionados",
+            df_filtrado["ano"].nunique()
+        )
+
+with col3:
+    with st.container(border=True):
+        st.metric(
+            "Subprefeituras com registros",
+            df_filtrado["subprefeitura"].nunique()
+        )
 
 if df_filtrado.empty:
     st.warning("Nenhuma ocorrência encontrada para os filtros selecionados.")
@@ -82,6 +122,8 @@ if df_filtrado.empty:
 
 # Gráfico de evolução anual
 st.divider()
+st.markdown('<div id="analise-temporal"></div>', unsafe_allow_html=True)
+st.header("Análise temporal")
 
 ocorrencias_ano = (
     df_filtrado.groupby("ano")
@@ -136,9 +178,9 @@ fig_mes.update_xaxes(dtick=1)
 with col_grafico2:
     st.plotly_chart(fig_mes, width="stretch")
 
-# Ranking de subprefeituras
 # Ranking de subprefeituras e análise de sazonalidade
 st.divider()
+st.markdown('<div id="analise-regional"></div>', unsafe_allow_html=True)
 st.header("Análise regional e sazonalidade")
 
 col_ranking, col_chuva = st.columns(2)
@@ -218,6 +260,7 @@ st.caption(
 )
 # Comparação por tipo de ocorrência
 st.divider()
+st.markdown('<div id="tipos-de-ocorrencias"></div>', unsafe_allow_html=True)
 st.header("Tipos de ocorrências")
 
 df_tipos = (
@@ -252,6 +295,7 @@ st.plotly_chart(fig_tipos, width="stretch")
 
 # Mapa de calor: ocorrências por ano e mês
 st.divider()
+st.markdown('<div id="mapa-calor-temporal"></div>', unsafe_allow_html=True)
 st.header("Mapa de calor temporal")
 
 df_calor = (
@@ -311,6 +355,7 @@ st.plotly_chart(fig_calor, width="stretch")
 
 # Mapa geográfico das ocorrências
 st.divider()
+st.markdown('<div id="distribuicao-geografica"></div>', unsafe_allow_html=True)
 st.header("Distribuição geográfica das ocorrências")
 
 from pyproj import Transformer
@@ -389,6 +434,7 @@ st.caption(
 
 # Tabela de dados
 st.divider()
+st.markdown('<div id="dados-detalhados"></div>', unsafe_allow_html=True)
 st.header("Dados detalhados")
 
 st.dataframe(df_filtrado, width="stretch")
