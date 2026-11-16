@@ -354,11 +354,39 @@ fig_mapa.update_layout(
 
 st.plotly_chart(fig_mapa, width="stretch")
 
+    # Observação sobre as coordenadas
 st.caption(
     "Posicionamento geográfico provisório, considerando "
     "SIRGAS 2000 / UTM zona 23S (EPSG:31983). "
     "O sistema de coordenadas deve ser confirmado na fonte original."
 )
+
+# Mapa de densidade geográfica
+st.subheader("Mapa de densidade de ocorrências")
+
+fig_densidade = px.density_map(
+    df_mapa,
+    lat="latitude",
+    lon="longitude",
+    radius=18,
+    zoom=10,
+    center={"lat": -23.55, "lon": -46.63},
+    map_style="carto-darkmatter",
+    height=550,
+    title="Concentração geográfica de alagamentos e inundações"
+)
+
+fig_densidade.update_layout(
+    margin={"r": 0, "t": 50, "l": 0, "b": 0}
+)
+
+st.plotly_chart(fig_densidade, width="stretch")
+
+st.caption(
+    "As áreas de maior intensidade representam maior concentração "
+    "de registros históricos, não uma previsão de risco."
+)
+
 # Tabela de dados
 st.divider()
 st.header("Dados detalhados")
