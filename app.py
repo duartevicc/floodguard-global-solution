@@ -216,6 +216,40 @@ st.caption(
     "Comparação baseada em registros históricos de "
     "alagamentos e inundações."
 )
+# Comparação por tipo de ocorrência
+st.divider()
+st.header("Tipos de ocorrências")
+
+df_tipos = (
+    df_filtrado["ocorrencia"]
+    .value_counts()
+    .reset_index()
+)
+
+df_tipos.columns = ["Tipo", "Total"]
+
+fig_tipos = px.bar(
+    df_tipos,
+    x="Total",
+    y="Tipo",
+    orientation="h",
+    color="Tipo",
+    color_discrete_map={
+        "ALAGAMENTO": "#2563EB",
+        "INUNDACAO": "#8B5CF6"
+    },
+    text="Total",
+    title="Comparação entre alagamentos e inundações"
+)
+
+fig_tipos.update_layout(
+    height=350,
+    showlegend=False,
+    yaxis_title=None
+)
+
+st.plotly_chart(fig_tipos, width="stretch")
+
 # Mapa de calor: ocorrências por ano e mês
 st.divider()
 st.header("Mapa de calor temporal")
